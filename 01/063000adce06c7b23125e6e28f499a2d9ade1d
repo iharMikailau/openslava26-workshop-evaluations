@@ -1,0 +1,163 @@
+README.md
+  s_109a798aea76f3::t_40bcfad68e545a 78-80,91-95,113-123,147-150
+backend/.env.example
+  s_fafca4e779a87d::t_f7deb2fdcfb6c9 1-7
+backend/README.md
+  s_273644eefafef6::t_5d1109724b913a 38-39,68-100
+backend/data/models.yaml
+  s_fafca4e779a87d::t_c0c058eeb6e8df 2-4,37-41,43-45,47,49-50,52-54,56,58-63,65-101,103-108
+backend/src/workshop_evals/adapters/inbound/http/app.py
+  s_273644eefafef6::t_5d39ceb00a3703 15,19-20,25,28,33-34,40,56-58,71-73,86-92,111-113,128,137-139
+backend/src/workshop_evals/adapters/inbound/http/decision_routes.py
+  s_273644eefafef6::t_1ca73b1b5c6641 1-94
+backend/src/workshop_evals/adapters/outbound/demo_client.py
+  s_273644eefafef6::t_c91f631115b6f4 13,34-45
+backend/src/workshop_evals/adapters/outbound/fake_decision_client.py
+  s_273644eefafef6::t_0c47e71d59fa63 1-57
+backend/src/workshop_evals/adapters/outbound/inmemory_decision_repo.py
+  s_273644eefafef6::t_af94a8a0bdce28 1-15
+backend/src/workshop_evals/adapters/outbound/openrouter_decisions.py
+  s_273644eefafef6::t_22a2c7f3af2112 1-181
+backend/src/workshop_evals/application/ports/decision_lab.py
+  s_273644eefafef6::t_8cf62f61996055 1-19
+backend/src/workshop_evals/application/services/decision_baseline.py
+  s_273644eefafef6::t_a78303bde924e9 1-119
+backend/src/workshop_evals/application/services/decision_lab.py
+  s_273644eefafef6::t_bebe4cc6f3cb87 1-78
+backend/src/workshop_evals/domain/decision_catalog.py
+  s_273644eefafef6::t_91410cf805d0fb 1-22
+backend/src/workshop_evals/domain/decision_lab.py
+  s_273644eefafef6::t_db34adb346eaad 1-172
+backend/src/workshop_evals/domain/decision_metrics.py
+  s_273644eefafef6::t_c8d41bc5681ff4 1-128
+backend/tests/fixtures/decision_metrics.json
+  s_273644eefafef6::t_80393be6be2616 1-177
+backend/tests/integration/test_api.py
+  s_fafca4e779a87d::t_829a9ea0d57989 5-6,23-28,33-44,103,110-177,187,196,200,308,319,339,355,365,383,392-397,404,412,435,474-508
+backend/tests/integration/test_decision_api.py
+  s_273644eefafef6::t_1266e6bc7cffff 1-66
+backend/tests/unit/test_decision_baseline.py
+  s_273644eefafef6::t_5bca2500bd3724 1-60
+backend/tests/unit/test_decision_catalog.py
+  s_273644eefafef6::t_3606e7bc3f6c4c 1-19
+backend/tests/unit/test_decision_lab.py
+  s_273644eefafef6::t_cd7346f722daf9 1-95
+backend/tests/unit/test_decision_metrics.py
+  s_273644eefafef6::t_643c9295bed20e 1-88
+backend/tests/unit/test_decision_service.py
+  s_273644eefafef6::t_3dec18680e8c53 1-66
+backend/tests/unit/test_fake_decision_client.py
+  s_273644eefafef6::t_af626a82d9dec4 1-30
+backend/tests/unit/test_openrouter_decisions.py
+  s_273644eefafef6::t_c1ace0055e57fd 1-162
+backend/tests/unit/test_yaml_catalog.py
+  s_fafca4e779a87d::t_0ac0a4f028070d 201-232
+docs/01-deterministic-evaluation.md
+  s_f8b207fb152c6b::t_47f2354f69100b 57
+docs/02-prompt-refinement.md
+  s_f8b207fb152c6b::t_b89eeff7850e2c 60
+docs/03-similarity-metrics.md
+  s_f8b207fb152c6b::t_7a3d789c1b4081 76
+docs/04-execution-based-evaluation.md
+  s_f8b207fb152c6b::t_d7573cd4fb6540 72,98
+docs/05-llm-as-judge.md
+  s_f8b207fb152c6b::t_547f57b167a074 103
+docs/06-judge-reliability.md
+  s_f8b207fb152c6b::t_6f647a90334238 49,58,99,115
+docs/07-decision-judges.md
+  s_f8b207fb152c6b::t_f29e0ab45c7a46 1-80
+docs/07-the-full-matrix.md
+  s_f8b207fb152c6b::t_b975812efb9eb0 60,72
+docs/README.md
+  s_f8b207fb152c6b::t_ce4696dcc931c0 27,84-86,89,92-105,109,115-116,131,137,149,167,171-172
+docs/workshop-companion.html
+  s_f8b207fb152c6b::t_d1f80ba7e7abb4 215,279,288,291,309,341,398,429,461,493,508-509,529
+docs/workshop-slides.html
+  s_f8b207fb152c6b::t_102b7919a2faca 466-467,479,488,822
+frontend/package-lock.json
+  s_f8b207fb152c6b::t_52a65f9fa15bdf 12-13,812-820,2683-2714
+frontend/package.json
+  s_f8b207fb152c6b::t_54358ca747ba4c 15-16
+frontend/playwright.config.ts
+  s_fafca4e779a87d::t_656ba63987bfe0 2-4,13-14,31-33,35
+frontend/src/App.tsx
+  s_f8b207fb152c6b::t_10cfefe5a2cb67 2,7,14-22,37,49-52,64-81
+frontend/src/api/client.ts
+  s_273644eefafef6::t_0d8fa7d4b54634 3-6,59-62
+frontend/src/api/types.ts
+  s_273644eefafef6::t_b63753c08f9913 248-278
+frontend/src/hooks/useCatalog.ts
+  s_f8b207fb152c6b::t_32a7eb7c578341 20-23
+frontend/src/lib/decisionExchange.ts
+  s_273644eefafef6::t_27d9acd84df972 1-104
+frontend/src/lib/decisionMetrics.ts
+  s_273644eefafef6::t_3cb6660a140796 1-58
+frontend/src/main.tsx
+  s_f8b207fb152c6b::t_2b30cc9e0a39db 3,10-12
+frontend/src/styles.css
+  s_273644eefafef6::t_78be339c69655b 6,8-26,38-49,51-55,61-72,74-78,161,182,233,236-237,281,283,298,324,328-329,333-336,349,375,715-903
+frontend/src/views/DecisionLab.tsx
+  s_273644eefafef6::t_d0afec685c0fae 1-136
+frontend/src/views/Models.tsx
+  s_fafca4e779a87d::t_10f6d7c1ec1dff 8,372-385,428-429
+frontend/tests/e2e/app.spec.ts
+  s_f8b207fb152c6b::t_5414e5a99e7815 11,14,17,20,23,27-53
+frontend/tests/e2e/datasets.spec.ts
+  s_f8b207fb152c6b::t_811a09d471e2fe 5,33,38
+frontend/tests/e2e/decision-exchange.spec.ts
+  s_f8b207fb152c6b::t_a0e9c7551c294d 1-18
+frontend/tests/e2e/decision-lab.spec.ts
+  s_f8b207fb152c6b::t_92e08291ce4999 1-115
+frontend/tests/e2e/decision-metrics.spec.ts
+  s_f8b207fb152c6b::t_610c640815bac3 1-14
+frontend/tests/e2e/errors.spec.ts
+  s_f8b207fb152c6b::t_2ff21b064d49cc 29,39,49,60
+frontend/tests/e2e/flows.spec.ts
+  s_f8b207fb152c6b::t_ae20a7a1e4e59b 70,82,97,112,130,145,156,168
+frontend/tests/e2e/models.spec.ts
+  s_f8b207fb152c6b::t_2a9c1dcee51ab1 5,22-27,86,88,112,117-153,165-166,171-172
+frontend/tests/e2e/routing.spec.ts
+  s_f8b207fb152c6b::t_ebc83363a47e3d 1-83
+frontend/tests/e2e/styling.spec.ts
+  s_109a798aea76f3::t_547d5d9f9ce1a0 1-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.18",
+  "base_commit_sha": "01063000adce06c7b23125e6e28f499a2d9ade1d",
+  "prompts": {},
+  "sessions": {
+    "s_109a798aea76f3": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a17a19-291d-75d2-a2ff-92ab4fcf4a75",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "Igor <hirzhek@gmail.com>"
+    },
+    "s_273644eefafef6": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a17a02-51a5-7412-a7ec-1ecde0aae039",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "Igor <hirzhek@gmail.com>"
+    },
+    "s_f8b207fb152c6b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a17a12-89db-75d0-837b-aebc143859ef",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "Igor <hirzhek@gmail.com>"
+    },
+    "s_fafca4e779a87d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1697d-00aa-7890-95c5-ce62ec72927d",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "Igor <hirzhek@gmail.com>"
+    }
+  }
+}
