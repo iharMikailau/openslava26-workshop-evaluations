@@ -69,7 +69,7 @@ naturally produces and let the extractor do the cleanup.
 
 ## Steps — Code execution
 
-1. Click the **Playground** tab.
+1. Click the **Playground** page.
 
 2. Select the `code_generation` category.
 
@@ -95,7 +95,7 @@ naturally produces and let the extractor do the cleanup.
 
 ## Steps — SQL execution
 
-1. Stay in the **Playground** tab.
+1. Stay in the **Playground** page.
 
 2. Select the `sql` category.
 

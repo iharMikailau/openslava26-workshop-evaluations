@@ -1,6 +1,7 @@
 # Example model catalogue — copy and edit this file to match your setup.
-# Local models (Ollama) require Ollama running on its default port (localhost:11434). No API key needed.
-# Cloud models (OpenAI, Anthropic) require the API key set in the indicated environment variable.
+# Local Ollama models need no API key. Eight curated OpenRouter models share
+# OPENROUTER_API_KEY. Direct OpenAI and Anthropic models can be added manually.
+# Runtime overlays override entries here by catalogue id.
 # role: candidate (answers prompts), judge (scores answers) or both.
 # Note: reasoning models (supports_reasoning: true, e.g. Qwen3) make unreliable judges —
 # they tend to spend their whole token budget "thinking" and never emit the rubric JSON.
@@ -33,39 +34,78 @@ models:
     role: both
     supports_reasoning: false
 
-  # --- OpenAI -----------------------------------------------------------------
-  - id: gpt-4o-mini
-    display_name: "GPT-4o Mini"
+  # --- OpenRouter (one shared OPENROUTER_API_KEY) ----------------------------
+  # Explicit model IDs are used; OpenRouter may route each request to different
+  # upstream providers. Reasoning support exposes the optional effort control only.
+  - id: openrouter-gpt-6-1-sol
+    display_name: "GPT-6.1 Sol (OpenRouter)"
     provider: openai_compat
-    model_id: gpt-4o-mini
-    base_url: https://api.openai.com/v1
-    api_key_env: OPENAI_API_KEY
+    model_id: openai/gpt-6.1-sol
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
     role: both
-    supports_reasoning: false
+    supports_reasoning: true
 
-  - id: gpt-4o
-    display_name: "GPT-4o"
+  - id: openrouter-gpt-6-1-terra
+    display_name: "GPT-6.1 Terra (OpenRouter)"
     provider: openai_compat
-    model_id: gpt-4o
-    base_url: https://api.openai.com/v1
-    api_key_env: OPENAI_API_KEY
+    model_id: openai/gpt-6.1-terra
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
     role: both
-    supports_reasoning: false
+    supports_reasoning: true
 
-  # --- Anthropic --------------------------------------------------------------
-  - id: claude-haiku-4-5
-    display_name: "Claude Haiku 4.5"
-    provider: anthropic
-    model_id: claude-haiku-4-5-20251001
-    api_key_env: ANTHROPIC_API_KEY
+  - id: openrouter-gpt-6-luna
+    display_name: "GPT-6 Luna (OpenRouter)"
+    provider: openai_compat
+    model_id: openai/gpt-6-luna
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
     role: both
-    supports_reasoning: false
+    supports_reasoning: true
 
-  - id: claude-sonnet-4-5
-    display_name: "Claude Sonnet 4.5"
-    provider: anthropic
-    model_id: claude-sonnet-4-5
-    api_key_env: ANTHROPIC_API_KEY
+  - id: openrouter-claude-sonnet-5-5
+    display_name: "Claude Sonnet 5.5 (OpenRouter)"
+    provider: openai_compat
+    model_id: anthropic/claude-sonnet-5.5
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    role: both
+    supports_reasoning: true
+
+  - id: openrouter-claude-haiku-5-5
+    display_name: "Claude Haiku 5.5 (OpenRouter)"
+    provider: openai_compat
+    model_id: anthropic/claude-haiku-5.5
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    role: both
+    supports_reasoning: true
+
+  - id: openrouter-claude-opus-5-5
+    display_name: "Claude Opus 5.5 (OpenRouter)"
+    provider: openai_compat
+    model_id: anthropic/claude-opus-5.5
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    role: both
+    supports_reasoning: true
+
+  - id: openrouter-deepseek-v4-1-flash-1017
+    display_name: "DeepSeek V4.1 Flash 1017 (OpenRouter)"
+    provider: openai_compat
+    model_id: deepseek/deepseek-v4.1-flash-1017
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+    role: both
+    supports_reasoning: true
+
+  - id: openrouter-qwen3-8-max-0902
+    display_name: "Qwen3.8 Max 0902 (OpenRouter)"
+    provider: openai_compat
+    model_id: qwen/qwen3.8-max-0902
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
     role: both
     supports_reasoning: true
 

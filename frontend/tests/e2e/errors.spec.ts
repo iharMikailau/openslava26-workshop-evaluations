@@ -26,7 +26,7 @@ test("playground surfaces an evaluation error", async ({ page }) => {
 
 test("matrix surfaces a run error", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Matrix" }).click();
+  await page.getByRole("link", { name: "Matrix" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
 
   await page.route("**/api/runs", (route) => route.fulfill(fail({ detail: "cannot start" })));
@@ -36,7 +36,7 @@ test("matrix surfaces a run error", async ({ page }) => {
 
 test("judge reliability surfaces an error", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Judge reliability" }).click();
+  await page.getByRole("link", { name: "Judge reliability" }).click();
   await page.getByLabel("Dataset category").selectOption("sentiment_classification");
 
   await page.route("**/api/runs", (route) => route.fulfill(fail({ detail: "denied" })));
@@ -46,7 +46,7 @@ test("judge reliability surfaces an error", async ({ page }) => {
 
 test("compare surfaces an error", async ({ page }) => {
   await page.goto("/");
-  await page.locator(".tabs").getByRole("button", { name: "Compare" }).click();
+  await page.locator(".tabs").getByRole("link", { name: "Compare" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
   await expect(page.getByLabel("Case")).toContainText("sent-01");
 
@@ -57,7 +57,7 @@ test("compare surfaces an error", async ({ page }) => {
 
 test("ensemble surfaces an error", async ({ page }) => {
   await page.goto("/");
-  await page.locator(".tabs").getByRole("button", { name: "Ensemble" }).click();
+  await page.locator(".tabs").getByRole("link", { name: "Ensemble" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
   await expect(page.getByLabel("Case")).toContainText("sent-01");
 

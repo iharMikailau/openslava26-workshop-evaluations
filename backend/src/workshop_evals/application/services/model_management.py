@@ -54,7 +54,7 @@ class ModelManagementService:
         os.environ[env_name] = value  # session only; never written to disk
 
     def credential_status(self, env_name: str) -> bool:
-        return bool(os.environ.get(env_name))
+        return bool(os.environ.get(env_name, "").strip())
 
     def _is_allowed_env(self, name: str) -> bool:
         referenced = {m.api_key_env for m in self._catalog.all_models() if m.api_key_env}
@@ -63,6 +63,8 @@ class ModelManagementService:
     def _with_key_status(self, model: ModelSpec) -> dict:
         data = model.model_dump(mode="json")
         data["key_detected"] = (
-            True if not model.api_key_env else bool(os.environ.get(model.api_key_env))
+            True
+            if not model.api_key_env
+            else bool(os.environ.get(model.api_key_env, "").strip())
         )
         return data

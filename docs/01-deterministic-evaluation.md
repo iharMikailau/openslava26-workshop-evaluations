@@ -54,7 +54,7 @@ together they reveal more than either alone.
 
 ## Steps
 
-1. Open the app at `http://localhost:5173` and confirm the **Playground** tab is active.
+1. Open the app at `http://localhost:5173` and confirm the **Playground** page is active.
 
 2. In the **Prompt** card, confirm the **From dataset** tab is selected.
 

@@ -24,7 +24,7 @@ small, cheap model can match a larger model running on a naive prompt.
 - Node.js 18 or later / npm
 - Either:
   - [Ollama](https://ollama.com) installed and running (free, local path), **or**
-  - API keys for OpenAI or Anthropic (cloud path), **or**
+  - one `OPENROUTER_API_KEY` for the curated hosted catalogue (paid usage), **or**
   - Nothing at all — offline demo mode is available for click-through exploration
 
 ---
@@ -81,29 +81,39 @@ Ports taken? Run the backend with `--port 8001` and the frontend with
 
 ### 3. Cloud keys (optional)
 
-Copy `backend/.env.example` to `backend/.env` and add the keys for the providers you use:
+The recommended hosted path uses one OpenRouter key for all eight curated GPT, Claude,
+DeepSeek, and Qwen entries. OpenRouter requests consume paid account credits. Copy
+`backend/.env.example` to `backend/.env`, then launch the backend from `backend/` with:
 
 ```
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-GEMINI_API_KEY=...        # Google Gemini via its OpenAI-compatible endpoint
+OPENROUTER_API_KEY=...
 ```
 
-Any OpenAI-compatible provider (OpenAI, Google Gemini, Mistral, Groq, Azure OpenAI, …) works
-with the `openai_compat` model type — set the model's `base_url` and the key variable named in
-its `api_key_env`. Anthropic uses its own provider. The app surfaces configured models in the
-candidate and judge dropdowns automatically.
+The backend reads only `.env` in the directory it was launched from; run the documented
+command from `backend/`. An exported environment value takes precedence over `.env`. You can
+also set `OPENROUTER_API_KEY` in Models → Session credentials for the current process only.
+Local Ollama models need no cloud key. The shipped catalogue does not include direct OpenAI
+or Anthropic examples; add a model in Models and set `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`
+if you want a direct connection. Other OpenAI-compatible services can also be added manually
+with their own endpoint and key variable.
+
+The catalogue selects an explicit OpenRouter model ID, while OpenRouter may route requests to
+different upstream providers. This can change latency and repeated outputs. The app does not
+pin a serving provider, guarantee repeatability, or enforce that every model supports every
+generation parameter. Reasoning effort is optional, and reasoning models can spend the token
+budget before producing a judge's required JSON. The displayed cost value is not authoritative
+for OpenRouter billing; check your account usage for charges.
 
 ### 4. Managing models from the app
 
-The **Models** tab configures the catalogue without editing files:
+The **Models** page configures the catalogue without editing files:
 
 - **Discover local models** — point it at an OpenAI-compatible server (Ollama's
   `http://localhost:11434/v1` by default) and it lists what the server actually serves via
   the plain `/models` endpoint — no AI involved. Add any of them with one click.
 - **Add or edit by hand** — register a local or remote model, or override a shipped entry.
-- **Session credentials** — set an API key for **any provider** (OpenAI, Anthropic, Google
-  Gemini, …) for the running session only (kept in memory, never written to disk). The tab
+- **Session credentials** — set the shared OpenRouter key or another configured provider key
+  for the running session only (kept in memory, never written to disk). The tab
   lists the key variables your configured models need and whether each is set. Use the
   environment (step 3) for a permanent one.
 
@@ -118,13 +128,13 @@ instead); models you add can.
 Evaluations run against a dataset of **cases** — the inputs, in `backend/data/datasets/`
 (one JSONL file per category). Each case carries the fields that decide which mechanisms
 apply: `prompt`, `reference` (exact match / similarity), `rubric` (judge), `tests` (code
-execution), `sql_schema` (SQL execution). The **Datasets** tab browses them by category and
+execution), `sql_schema` (SQL execution). The **Datasets** page browses them by category and
 lets you **add, edit, enable/disable and remove** cases; the form previews which mechanisms
 the fields you fill in will unlock.
 
 As with models, the shipped JSONL base is read-only (source `file`); your changes go to a
 gitignored `datasets.runtime.json` overlay (source `user`) and are picked up immediately by
-the other tabs' selectors. Base cases can be disabled but not deleted; cases you add can.
+the other pages' selectors. Base cases can be disabled but not deleted; cases you add can.
 
 ---
 
@@ -136,6 +146,7 @@ the other tabs' selectors. Base cases can be disabled but not deleted; cases you
 | **Matrix** | Multiple cases × multiple candidates (model + optional prompt override) |
 | **Compare** | Pairwise A/B judging with a position-swap check for judge bias |
 | **Ensemble** | Score one answer with several judges; see their average and disagreement |
+| **Decision judges** | Compare typed judgments and validate them against human labels. |
 | **Judge reliability** | Meta-evaluation: how well does a judge agree with a stronger reference judge? |
 | **Datasets** | Browse, add, edit and enable/disable the evaluation cases every run uses |
 | **Models** | Discover, add, enable/disable and configure models — local or remote — without leaving the app |
@@ -153,6 +164,9 @@ the other tabs' selectors. Base cases can be disabled but not deleted; cases you
 | 04 | [Execution-based evaluation](04-execution-based-evaluation.md) | Code execution and SQL execution as deterministic graders | Playground |
 | 05 | [LLM as judge](05-llm-as-judge.md) | 5-dimension rubric, reference-guided vs reference-free | Playground |
 | 06 | [Judge reliability](06-judge-reliability.md) | Self-preference bias; measuring inter-judge agreement | Judge reliability |
+| 07 | [Decision judges](07-decision-judges.md) | Typed judgments, uncertainty, and human validation | Decision judges |
 | 07 | [The full matrix](07-the-full-matrix.md) | Sweeping models × mechanisms; offline demo; eval in CI | Matrix |
 
 Work through the labs in order for the first run. Each lab links to the next at the bottom.
+
+Application navigation links open addressable pages. Leaving a page resets its local inputs and results; refreshing restores the page only. See the [route and hosting guidance](../README.md#quick-start).

@@ -12,25 +12,32 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from workshop_evals.adapters.inbound.http.decision_routes import router as decision_router
 from workshop_evals.adapters.inbound.http.routes import router
 from workshop_evals.adapters.outbound.anthropic_client import AnthropicClient
 from workshop_evals.adapters.outbound.demo_client import make_demo_client
+from workshop_evals.adapters.outbound.fake_decision_client import FakeDecisionClient
+from workshop_evals.adapters.outbound.inmemory_decision_repo import InMemoryDecisionRunRepository
 from workshop_evals.adapters.outbound.inmemory_run_repo import InMemoryRunRepository
 from workshop_evals.adapters.outbound.jsonl_dataset_repo import JsonlDatasetRepository
 from workshop_evals.adapters.outbound.model_discovery import discover_models
 from workshop_evals.adapters.outbound.openai_compat_client import OpenAICompatClient
+from workshop_evals.adapters.outbound.openrouter_decisions import OpenRouterDecisionClient
 from workshop_evals.adapters.outbound.provider_router import ProviderRouter
 from workshop_evals.adapters.outbound.yaml_env_catalog import YamlModelCatalog
+from workshop_evals.application.ports.decision_lab import DecisionClientPort
 from workshop_evals.application.ports.llm_client import LLMClientPort
 from workshop_evals.application.services.catalog import CatalogService
 from workshop_evals.application.services.compare import ComparePairwiseService
 from workshop_evals.application.services.dataset_management import DatasetManagementService
+from workshop_evals.application.services.decision_baseline import DecisionChatService
+from workshop_evals.application.services.decision_lab import DecisionLabService
 from workshop_evals.application.services.ensemble import EnsembleJudgeService
 from workshop_evals.application.services.evaluators import default_registry
 from workshop_evals.application.services.judge_agreement import JudgeAgreementService
 from workshop_evals.application.services.model_management import ModelManagementService
 from workshop_evals.application.services.run_evaluation import RunEvaluationService
-from workshop_evals.config.settings import Settings, get_settings
+from workshop_evals.config.settings import Settings, get_settings, load_launch_environment
 from workshop_evals.domain.models import Provider
 
 
@@ -46,6 +53,9 @@ class Container:
     models_mgmt: ModelManagementService
     datasets_mgmt: DatasetManagementService
     run_repo: InMemoryRunRepository
+    decision_client: DecisionClientPort
+    decision_chat: DecisionChatService
+    decision_lab: DecisionLabService
 
 
 def default_llm_client() -> LLMClientPort:
@@ -58,7 +68,9 @@ def default_llm_client() -> LLMClientPort:
 
 
 def build_container(
-    settings: Settings | None = None, llm_client: LLMClientPort | None = None
+    settings: Settings | None = None,
+    llm_client: LLMClientPort | None = None,
+    decision_client: DecisionClientPort | None = None,
 ) -> Container:
     settings = settings or get_settings()
     datasets = JsonlDatasetRepository(settings.datasets_dir, settings.datasets_overlay)
@@ -71,6 +83,13 @@ def build_container(
         client = make_demo_client()
     else:
         client = default_llm_client()
+    selected_decision_client = decision_client or (
+        FakeDecisionClient() if settings.fake_llm else OpenRouterDecisionClient()
+    )
+    decision_chat = DecisionChatService(client, models, simulated=settings.fake_llm)
+    decision_lab = DecisionLabService(
+        selected_decision_client, InMemoryDecisionRunRepository(), decision_chat
+    )
     runs = RunEvaluationService(client, models, datasets, registry, run_repo)
     judge_agreement = JudgeAgreementService(client, models, datasets, run_repo)
     compare = ComparePairwiseService(client, models, datasets)
@@ -89,6 +108,9 @@ def build_container(
         models_mgmt=models_mgmt,
         datasets_mgmt=datasets_mgmt,
         run_repo=run_repo,
+        decision_client=selected_decision_client,
+        decision_chat=decision_chat,
+        decision_lab=decision_lab,
     )
 
 
@@ -103,6 +125,7 @@ def create_app(container: Container | None = None) -> FastAPI:
     )
     app.state.container = container
     app.include_router(router)
+    app.include_router(decision_router)
 
     @app.get("/health")
     def health() -> dict[str, str]:
@@ -111,6 +134,9 @@ def create_app(container: Container | None = None) -> FastAPI:
     return app
 
 
+# Provider adapters and key-status reporting read process environment directly. Load the
+# documented launch-directory file before constructing settings, catalogues, or clients.
+load_launch_environment()
 app = create_app()
 
 

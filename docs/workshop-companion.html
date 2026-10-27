@@ -212,6 +212,7 @@ textarea { min-height: 76px; resize: vertical; width: 100%; }
       <li><a href="#lab-04"><span class="toc__num">04</span><span>Execution-based</span><span class="toc__count" data-count="lab-04"></span></a></li>
       <li><a href="#lab-05"><span class="toc__num">05</span><span>LLM as judge</span><span class="toc__count" data-count="lab-05"></span></a></li>
       <li><a href="#lab-06"><span class="toc__num">06</span><span>Judge reliability</span><span class="toc__count" data-count="lab-06"></span></a></li>
+      <li><a href="07-decision-judges.md"><span class="toc__num">07</span><span>Decision judges guide</span></a></li>
       <li><a href="#lab-07"><span class="toc__num">07</span><span>The full matrix</span><span class="toc__count" data-count="lab-07"></span></a></li>
     </ul>
   </nav>
@@ -275,7 +276,7 @@ pkill -f vite              # web app</pre><button class="copy" type="button">Cop
             <tr><td>Qwen3 4B (local)<br><span class="mono">qwen3-4b · 2.5 GB</span></td><td>Small candidate</td><td>Reasoning model. It thinks before answering, so it is slower and can run out of tokens. Don't use it as a judge.</td></tr>
             <tr><td>Llama 3.2 3B (local)<br><span class="mono">llama3-2-3b · 2.0 GB</span></td><td>Default judge, or small candidate</td><td>Answers directly and returns the rubric JSON reliably. Tends to add a sentence around the label.</td></tr>
             <tr><td>Qwen2.5 Coder 7B (local)<br><span class="mono">qwen25-coder-7b · 4.7 GB</span></td><td>"Large" candidate, reference judge</td><td>Largest local model. Best for the code and SQL labs, and the stronger judge in Lab 06.</td></tr>
-            <tr><td>GPT-4o, GPT-4o Mini, Claude Haiku 4.5, Claude Sonnet 4.5</td><td>Skip for now</td><td>Listed in the dropdowns, but no API keys are set, so calls to them fail. Add a key in the <b>Models</b> tab if you want a cloud judge.</td></tr>
+            <tr><td>GPT-6.1 Sol, GPT-6.1 Terra, GPT-6 Luna, Claude 5.5, DeepSeek V4.1 Flash, Qwen3.8 Max</td><td>Optional hosted comparisons</td><td>One <code>OPENROUTER_API_KEY</code> enables these entries. Hosted usage costs credits. OpenRouter may vary the serving provider; outputs and latency can vary, parameter support is not enforced, and displayed costs are not billing estimates. Add the key in <b>Models</b> or the backend launch-directory <code>.env</code>.</td></tr>
           </tbody>
         </table>
       </div>
@@ -284,10 +285,10 @@ pkill -f vite              # web app</pre><button class="copy" type="button">Cop
     <!-- ===================== LAB 00 ===================== -->
     <section class="block lab" id="lab-00" data-section="lab-00">
       <header>
-        <div class="lab__top"><span class="lab__num">00</span><h2>Introduction</h2><span class="lab__tab">Tabs: <b>all</b></span></div>
+        <div class="lab__top"><span class="lab__num">00</span><h2>Introduction</h2><span class="lab__tab">Pages: <b>all</b></span></div>
         <p class="lede">Get the three-axis model in your head: every cell is one case × one candidate × one mechanism, producing a response, a score, a verdict and usage.</p>
       </header>
-      <div class="quirk"><span class="quirk__title">The app has seven tabs, not three</span><p>The lab text describes Playground, Matrix and Judge reliability. The app also has <b>Compare</b>, <b>Ensemble</b> (both used in Lab 06), <b>Datasets</b> and <b>Models</b>.</p></div>
+      <div class="quirk"><span class="quirk__title">The app has eight pages</span><p>Navigation links open addressable pages. Leaving a page resets local inputs and results; refreshing restores only the page. The lab text describes Playground, Matrix and Judge reliability. The app also has <b>Compare</b>, <b>Ensemble</b> (both used in Lab 06), <b>Decision judges</b>, <b>Datasets</b> and <b>Models</b>.</p></div>
       <ul class="steps">
         <li><label><input type="checkbox" id="l00-1"><span>Open the app and find the subtitle "prompts · models · evaluation mechanisms".</span></label></li>
         <li><label><input type="checkbox" id="l00-2"><span><b>Playground</b>: pick category <code>sentiment_classification</code>. Hover a greyed mechanism such as <span class="mech">Code execution</span> and see why it is unavailable (the case has no test suite).</span></label></li>
@@ -305,7 +306,7 @@ pkill -f vite              # web app</pre><button class="copy" type="button">Cop
     <!-- ===================== LAB 01 ===================== -->
     <section class="block lab" id="lab-01" data-section="lab-01">
       <header>
-        <div class="lab__top"><span class="lab__num">01</span><h2>Deterministic evaluation</h2><span class="lab__tab">Tab: <b>Playground</b></span></div>
+        <div class="lab__top"><span class="lab__num">01</span><h2>Deterministic evaluation</h2><span class="lab__tab">Page: <b>Playground</b></span></div>
         <p class="lede">Turn "it seems fine" into a number with exact match on sentiment, then add a judge and watch the two verdicts disagree.</p>
       </header>
       <dl class="recipe">
@@ -337,7 +338,7 @@ pkill -f vite              # web app</pre><button class="copy" type="button">Cop
     <!-- ===================== LAB 02 ===================== -->
     <section class="block lab" id="lab-02" data-section="lab-02">
       <header>
-        <div class="lab__top"><span class="lab__num">02</span><h2>Prompt refinement</h2><span class="lab__tab">Tab: <b>Matrix</b></span></div>
+        <div class="lab__top"><span class="lab__num">02</span><h2>Prompt refinement</h2><span class="lab__tab">Page: <b>Matrix</b></span></div>
         <p class="lede">Hold the model fixed, change only the prompt, and see how much of the quality gap the prompt alone closes.</p>
       </header>
       <h3 class="sub">Override templates</h3>
@@ -394,7 +395,7 @@ Review:
     <!-- ===================== LAB 03 ===================== -->
     <section class="block lab" id="lab-03" data-section="lab-03">
       <header>
-        <div class="lab__top"><span class="lab__num">03</span><h2>Similarity metrics</h2><span class="lab__tab">Tab: <b>Playground</b></span></div>
+        <div class="lab__top"><span class="lab__num">03</span><h2>Similarity metrics</h2><span class="lab__tab">Page: <b>Playground</b></span></div>
         <p class="lede">Score summaries by word overlap with BLEU, ROUGE-L and fuzzy match, then compare that with a judge that reads for meaning.</p>
       </header>
       <dl class="recipe">
@@ -425,7 +426,7 @@ Review:
     <!-- ===================== LAB 04 ===================== -->
     <section class="block lab" id="lab-04" data-section="lab-04">
       <header>
-        <div class="lab__top"><span class="lab__num">04</span><h2>Execution-based evaluation</h2><span class="lab__tab">Tab: <b>Playground</b></span></div>
+        <div class="lab__top"><span class="lab__num">04</span><h2>Execution-based evaluation</h2><span class="lab__tab">Page: <b>Playground</b></span></div>
         <p class="lede">Grade code by running it against tests, SQL by running it against a schema, and arithmetic by checking the number.</p>
       </header>
       <dl class="recipe">
@@ -457,7 +458,7 @@ Review:
     <!-- ===================== LAB 05 ===================== -->
     <section class="block lab" id="lab-05" data-section="lab-05">
       <header>
-        <div class="lab__top"><span class="lab__num">05</span><h2>LLM as judge</h2><span class="lab__tab">Tab: <b>Playground</b></span></div>
+        <div class="lab__top"><span class="lab__num">05</span><h2>LLM as judge</h2><span class="lab__tab">Page: <b>Playground</b></span></div>
         <p class="lede">Have a second model score open-ended answers on five dimensions: correctness, completeness, robustness, clarity and efficiency, each 0–10.</p>
       </header>
       <dl class="recipe">
@@ -489,7 +490,7 @@ Review:
     <!-- ===================== LAB 06 ===================== -->
     <section class="block lab" id="lab-06" data-section="lab-06">
       <header>
-        <div class="lab__top"><span class="lab__num">06</span><h2>Judge reliability</h2><span class="lab__tab">Tabs: <b>Judge reliability</b>, <b>Compare</b>, <b>Ensemble</b></span></div>
+        <div class="lab__top"><span class="lab__num">06</span><h2>Judge reliability</h2><span class="lab__tab">Pages: <b>Judge reliability</b>, <b>Compare</b>, <b>Ensemble</b></span></div>
         <p class="lede">Evaluate the evaluator. Measure how closely a judge agrees with a stronger reference judge, test it for position bias, and average several judges.</p>
       </header>
       <dl class="recipe">
@@ -504,8 +505,8 @@ Review:
         <li><label><input type="checkbox" id="l06-2"><span>Read the verdict, then Pearson r, Spearman ρ, rank agreement and MAE. Note the sample size.</span></label></li>
         <li><label><input type="checkbox" id="l06-3"><span>Read the error-by-dimension bars. Which dimension do the judges disagree on most?</span></label></li>
         <li><label><input type="checkbox" id="l06-4"><span>Re-run with Llama 3.2 3B as both candidate and judge under test, and compare with the first run.</span></label></li>
-        <li><label><input type="checkbox" id="l06-5"><span>Switch to the <b>Compare</b> tab in the top navigation (the swap check is not on Judge reliability). Pick a <code>writing</code> case, set <b>Model A</b> = Qwen3 4B, <b>Model B</b> = Llama 3.2 3B and <b>Judge model</b> = Qwen2.5 Coder 7B, tick "Swap positions to check for bias" and click <b>Compare</b>. Does the winner hold when the answers swap places?</span></label></li>
-        <li><label><input type="checkbox" id="l06-6"><span>Switch to the <b>Ensemble</b> tab. Pick a <code>writing</code> case and a candidate <b>Model</b>, tick Llama 3.2 3B and Qwen2.5 Coder 7B under <b>Panel of judges</b>, and click <b>Run ensemble</b>. Read the average and the spread.</span></label></li>
+        <li><label><input type="checkbox" id="l06-5"><span>Switch to the <b>Compare</b> page in the top navigation (the swap check is not on Judge reliability). Pick a <code>writing</code> case, set <b>Model A</b> = Qwen3 4B, <b>Model B</b> = Llama 3.2 3B and <b>Judge model</b> = Qwen2.5 Coder 7B, tick "Swap positions to check for bias" and click <b>Compare</b>. Does the winner hold when the answers swap places?</span></label></li>
+        <li><label><input type="checkbox" id="l06-6"><span>Switch to the <b>Ensemble</b> page. Pick a <code>writing</code> case and a candidate <b>Model</b>, tick Llama 3.2 3B and Qwen2.5 Coder 7B under <b>Panel of judges</b>, and click <b>Run ensemble</b>. Read the average and the spread.</span></label></li>
       </ul>
       <div class="quirk"><span class="quirk__title">Different words in the app</span><p>The lab's middle verdict "uncertain" is shown as <b>questionable</b>. The lab also says the page warns about a self-judging setup; it doesn't, so watch which models you picked.</p></div>
       <h3 class="sub">What to look for</h3>
@@ -525,7 +526,7 @@ Review:
     <!-- ===================== LAB 07 ===================== -->
     <section class="block lab" id="lab-07" data-section="lab-07">
       <header>
-        <div class="lab__top"><span class="lab__num">07</span><h2>The full matrix</h2><span class="lab__tab">Tab: <b>Matrix</b></span></div>
+        <div class="lab__top"><span class="lab__num">07</span><h2>The full matrix</h2><span class="lab__tab">Page: <b>Matrix</b></span></div>
         <p class="lede">Sweep several cases, candidates and mechanisms at once, then turn that sweep into a gate a CI pipeline could enforce.</p>
       </header>
       <dl class="recipe">

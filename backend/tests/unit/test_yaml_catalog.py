@@ -198,3 +198,35 @@ def test_fresh_catalog_reflects_persisted_changes(tmp_path):
     catalog2 = YamlModelCatalog(base, overlay)
     assert catalog2.get_model("persisted") is not None
     assert catalog2.get_model("persisted").source == "user"
+
+
+def test_shipped_catalog_has_curated_openrouter_models_without_direct_examples(tmp_path):
+    base = Path(__file__).parents[2] / "data" / "models.yaml"
+    overlay = tmp_path / "models.runtime.yaml"
+    catalog = YamlModelCatalog(base, overlay)
+    all_models = {model.id: model for model in catalog.all_models()}
+    enabled = {model.id for model in catalog.list_models()}
+
+    expected = {
+        "openrouter-gpt-6-1-sol": "openai/gpt-6.1-sol",
+        "openrouter-gpt-6-1-terra": "openai/gpt-6.1-terra",
+        "openrouter-gpt-6-luna": "openai/gpt-6-luna",
+        "openrouter-claude-sonnet-5-5": "anthropic/claude-sonnet-5.5",
+        "openrouter-claude-haiku-5-5": "anthropic/claude-haiku-5.5",
+        "openrouter-claude-opus-5-5": "anthropic/claude-opus-5.5",
+        "openrouter-deepseek-v4-1-flash-1017": "deepseek/deepseek-v4.1-flash-1017",
+        "openrouter-qwen3-8-max-0902": "qwen/qwen3.8-max-0902",
+    }
+    assert {model_id: all_models[model_id].model_id for model_id in expected} == expected
+    assert all(all_models[model_id].enabled for model_id in expected)
+    assert all(all_models[model_id].role.value == "both" for model_id in expected)
+    assert all(all_models[model_id].api_key_env == "OPENROUTER_API_KEY" for model_id in expected)
+    assert all(
+        all_models[model_id].base_url == "https://openrouter.ai/api/v1" for model_id in expected
+    )
+    assert all(all_models[model_id].supports_reasoning for model_id in expected)
+    assert {"qwen3-4b", "llama3-2-3b", "qwen25-coder-7b"} <= enabled
+    direct = {"gpt-4o-mini", "gpt-4o", "claude-haiku-4-5", "claude-sonnet-4-5"}
+    assert direct.isdisjoint(all_models)
+    assert direct.isdisjoint(enabled)
+    assert not overlay.exists()

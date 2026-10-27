@@ -5,6 +5,7 @@ import type { ManagedModel, ModelSpec, Provider } from "../api/types";
 import { sanitizeId } from "../lib/catalog";
 
 const OLLAMA_DEFAULT = "http://localhost:11434/v1";
+const OPENROUTER_KEY = "OPENROUTER_API_KEY";
 
 interface FormState {
   id: string;
@@ -369,6 +370,20 @@ export function Models({ onChange }: { onChange: () => void }) {
         </div>
 
         <div className="card">
+          <div className="card__title">Recommended cloud setup: OpenRouter</div>
+          <div className="stack">
+            <span className="field__hint">
+              One OpenRouter key enables the eight curated GPT, Claude, DeepSeek, and Qwen models.
+              OpenRouter usage may cost money; local Ollama models remain available without a key.
+              Direct OpenAI and Anthropic models can be added manually in Models.
+            </span>
+            <button className="btn" type="button" onClick={() => setEnvName(OPENROUTER_KEY)}>
+              Use OpenRouter key
+            </button>
+          </div>
+        </div>
+
+        <div className="card">
           <div className="card__title">Session credentials</div>
           {referencedKeys.length > 0 && (
             <div className="stack" style={{ marginBottom: 12 }}>
@@ -410,9 +425,8 @@ export function Models({ onChange }: { onChange: () => void }) {
               />
             </label>
             <span className="field__hint">
-              Works for any cloud provider (OpenAI, Anthropic, Google Gemini, …). Kept in memory
-              for this session only — never written to disk; set it in the environment before
-              launching for a permanent one.
+              Kept in memory for this session only — never written to disk. For a persistent key,
+              set it in the backend environment or its launch-directory .env file before starting.
             </span>
             <button className="btn" type="submit" disabled={!envName.trim() || !keyValue}>
               Set for this session

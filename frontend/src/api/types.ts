@@ -245,3 +245,34 @@ export const DEFAULT_PARAMS: RunParams = {
   temperature: 0,
   max_tokens: 1024,
 };
+
+export type DecisionQuestion =
+  | { id: string; type: "noul"; instructions: string; criteria: Record<string, string> }
+  | { id: string; type: "choice"; instructions: string; criteria: Record<string, string> }
+  | { id: string; type: "score"; instructions: string; criteria: string[] };
+export type DecisionLabel = boolean | string | number;
+export interface DecisionItem {
+  id: string; prompt: string; answer: string; reference: string | null; evidence: string | null;
+  labels: Record<string, DecisionLabel>;
+}
+export interface DecisionConfig {
+  items: DecisionItem[]; questions: DecisionQuestion[]; judge_ids: string[]; baseline_model_id: string | null;
+}
+export type DecisionAnswer =
+  | { type: "noul"; probability: number | null; verdict: boolean | null; rationale: string | null }
+  | { type: "choice"; value: string; probabilities: Record<string, number> | null; confidence: number | null; rationale: string | null }
+  | { type: "score"; value: number; normalized: number; probabilities: number[] | null; confidence: number | null; rationale: string | null };
+export interface DecisionError { code: string; message: string }
+export interface DecisionJudgment {
+  item_id: string; judge_id: string; requested_model: string; returned_model: string | null;
+  answers: Record<string, DecisionAnswer>; raw_answers: Record<string, Record<string, unknown>>;
+  question_errors: Record<string, DecisionError>; error: DecisionError | null;
+  usage: { input_tokens: number | null; output_tokens: number | null; cost_usd: number | null; latency_ms: number | null; attempts: number };
+  simulated: boolean;
+}
+export interface DecisionRun {
+  id: string; status: "pending" | "running" | "completed" | "failed"; config: DecisionConfig;
+  results: DecisionJudgment[]; total: number; completed: number; error: DecisionError | null;
+}
+export interface DecisionModel { id: string; display_name: string; model_id: string; api_key_env: string; key_configured: boolean }
+export interface Completion { text: string; model_id: string | null; error: string | null; usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number; cost_usd: number; latency_ms: number } }

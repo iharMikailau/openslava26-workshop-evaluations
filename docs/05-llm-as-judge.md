@@ -100,7 +100,7 @@ score, that is the cause.
 
 ## Steps
 
-1. Click the **Playground** tab.
+1. Click the **Playground** page.
 
 2. Select the `writing` category (or `instruction_following` — both are judge-evaluated
    datasets).

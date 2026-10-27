@@ -463,8 +463,8 @@ npm run dev        # http://localhost:5173</pre>
     </div>
   </div>
   <div class="stack">
-    <span class="small muted">Seven tabs</span>
-    <div class="tabs"><span class="chip chip--plain">Playground</span><span class="chip chip--plain">Matrix</span><span class="chip chip--plain">Compare</span><span class="chip chip--plain">Ensemble</span><span class="chip chip--plain">Judge reliability</span><span class="chip chip--plain">Datasets</span><span class="chip chip--plain">Models</span></div>
+    <span class="small muted">Eight addressable pages · leaving resets inputs and results; refresh restores the page only</span>
+    <div class="tabs"><span class="chip chip--plain">Playground</span><span class="chip chip--plain">Matrix</span><span class="chip chip--plain">Compare</span><span class="chip chip--plain">Ensemble</span><span class="chip chip--plain">Judge reliability</span><span class="chip chip--plain">Decision judges</span><span class="chip chip--plain">Datasets</span><span class="chip chip--plain">Models</span></div>
   </div>
   <aside class="notes">
     <p><b>~3 min.</b> Ports and adapters: the scoring logic has no web framework or SDK in it, so every scorer is short enough to read in a minute. Invite people to open <code>backend/src/workshop_evals/domain/scoring/</code> during the labs.</p>
@@ -476,7 +476,7 @@ npm run dev        # http://localhost:5173</pre>
 <section class="slide" data-title="Agenda">
   <div class="head"><span class="eyebrow">The plan</span><h2>Eight labs, each building on the last</h2></div>
   <table class="agenda">
-    <thead><tr><th>Lab</th><th>Topic</th><th>Core idea</th><th>Tab</th><th>Min</th></tr></thead>
+    <thead><tr><th>Lab</th><th>Topic</th><th>Core idea</th><th>Page</th><th>Min</th></tr></thead>
     <tbody>
       <tr><td><span>00</span></td><td>Introduction</td><td>Tour the app and the matrix</td><td>all</td><td>10</td></tr>
       <tr><td><span>01</span></td><td>Deterministic evaluation</td><td>Exact match gives you a baseline</td><td>Playground</td><td>15</td></tr>
@@ -485,6 +485,7 @@ npm run dev        # http://localhost:5173</pre>
       <tr><td><span>04</span></td><td>Execution-based evaluation</td><td>The grader for code is code</td><td>Playground</td><td>20</td></tr>
       <tr><td><span>05</span></td><td>LLM as judge</td><td>Five dimensions, scored by a second model</td><td>Playground</td><td>20</td></tr>
       <tr><td><span>06</span></td><td>Judge reliability</td><td>Who judges the judge?</td><td>Judge reliability</td><td>25</td></tr>
+      <tr><td><span>07</span></td><td><a href="07-decision-judges.md">Decision judges</a></td><td>Validate typed decisions</td><td>Decision judges</td><td>Self-paced</td></tr>
       <tr><td><span>07</span></td><td>The full matrix</td><td>Sweep everything, then gate in CI</td><td>Matrix</td><td>20</td></tr>
     </tbody>
     <tfoot><tr><td></td><td>Plus 30 min of talk and wrap-up</td><td></td><td></td><td>175</td></tr></tfoot>
@@ -818,7 +819,7 @@ npm run dev        # http://localhost:5173</pre>
     </div>
   </div>
   <aside class="notes"><p>This is the slowest lab: three model passes over 8 cases. Start the agreement run first, then explain Compare and Ensemble while it runs.</p>
-  <p>Without cloud keys, use Qwen2.5 Coder 7B as the reference. Remind people that "reliable" then means "agrees with a slightly bigger model", not ground truth.</p></aside>
+      <p>Without cloud keys, use Qwen2.5 Coder 7B as the reference. Remind people that "reliable" then means "agrees with a slightly bigger model", not ground truth. The optional OpenRouter path uses paid credits and one shared key; upstream routing can vary, so results and latency are not guaranteed repeatable. The app does not enforce parameter capabilities, and its cost display is not an authoritative bill.</p></aside>
 </section>
 
 <!-- 21 · Lab 07 -->

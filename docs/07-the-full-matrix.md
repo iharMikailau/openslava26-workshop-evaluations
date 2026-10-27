@@ -57,7 +57,7 @@ in code, an eval matrix catches regressions in model output quality. The backend
 `GET /api/runs/{id}` until status is completed, checks the scores, and exits with an
 appropriate code.
 
-The Matrix tab has this gate built in: the **Gate** row under the results checks each
+The Matrix page has this gate built in: the **Gate** row under the results checks each
 column's average per mechanism against a threshold you set, and marks the column **PASS**
 or **BLOCKED**. A cell that errored counts as 0, so a broken model call cannot slip
 through.
@@ -69,7 +69,7 @@ cannot automate the gate.
 
 ## Steps
 
-1. Click the **Matrix** tab.
+1. Click the **Matrix** page.
 
 2. **Set up the cases.** Choose `sentiment_classification` from the **Category** dropdown.
    Select all available cases by clicking each checkbox, or use the first 8–10.

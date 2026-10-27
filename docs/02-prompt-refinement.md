@@ -57,7 +57,7 @@ Because the model is held constant, any score difference is attributable to the 
 
 ## Steps
 
-1. Click the **Matrix** tab in the navigation bar.
+1. Click the **Matrix** page in the navigation bar.
 
 2. In the **Cases** card, select `sentiment_classification` from the **Category** dropdown.
    The first three cases will be pre-selected. Add a few more by clicking their checkboxes —

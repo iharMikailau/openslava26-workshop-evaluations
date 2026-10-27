@@ -1,24 +1,25 @@
 import { useEffect, useState } from "react";
+import { Link, NavLink, Navigate, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 
 import { useCatalog } from "./hooks/useCatalog";
 import { Compare } from "./views/Compare";
 import { Datasets } from "./views/Datasets";
+import { DecisionLab } from "./views/DecisionLab";
 import { Ensemble } from "./views/Ensemble";
 import { JudgeReliability } from "./views/JudgeReliability";
 import { Matrix } from "./views/Matrix";
 import { Models } from "./views/Models";
 import { Playground } from "./views/Playground";
 
-type Tab = "playground" | "matrix" | "compare" | "ensemble" | "judge" | "datasets" | "models";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "playground", label: "Playground" },
-  { id: "matrix", label: "Matrix" },
-  { id: "compare", label: "Compare" },
-  { id: "ensemble", label: "Ensemble" },
-  { id: "judge", label: "Judge reliability" },
-  { id: "datasets", label: "Datasets" },
-  { id: "models", label: "Models" },
+const PAGES = [
+  { path: "/playground", label: "Playground" },
+  { path: "/matrix", label: "Matrix" },
+  { path: "/compare", label: "Compare" },
+  { path: "/ensemble", label: "Ensemble" },
+  { path: "/judge-reliability", label: "Judge reliability" },
+  { path: "/decision-judges", label: "Decision judges" },
+  { path: "/datasets", label: "Datasets" },
+  { path: "/models", label: "Models" },
 ];
 
 function usePreferredTheme() {
@@ -33,7 +34,7 @@ function usePreferredTheme() {
 
 export function App() {
   const { catalog, error, refresh } = useCatalog();
-  const [tab, setTab] = useState<Tab>("playground");
+  const navigate = useNavigate();
   const { theme, setTheme } = usePreferredTheme();
 
   return (
@@ -45,14 +46,10 @@ export function App() {
         </div>
         <div className="topbar__spacer" />
         <nav className="tabs">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              className={`tab ${tab === t.id ? "tab--active" : ""}`}
-              onClick={() => setTab(t.id)}
-            >
-              {t.label}
-            </button>
+          {PAGES.map(({ path, label }) => (
+            <NavLink key={path} to={path} end className={({ isActive }) => `tab ${isActive ? "tab--active" : ""}`}>
+              {label}
+            </NavLink>
           ))}
         </nav>
         <button
@@ -64,21 +61,24 @@ export function App() {
         </button>
       </header>
 
-      <main className="content">
-        {error && <div className="banner">{error}</div>}
-        {!catalog && !error && <p className="muted">Loading catalogue…</p>}
-        {catalog && (
-          <>
-            {tab === "playground" && <Playground catalog={catalog} />}
-            {tab === "matrix" && <Matrix catalog={catalog} />}
-            {tab === "compare" && <Compare catalog={catalog} />}
-            {tab === "ensemble" && <Ensemble catalog={catalog} />}
-            {tab === "judge" && <JudgeReliability catalog={catalog} />}
-            {tab === "datasets" && <Datasets catalog={catalog} onChange={refresh} />}
-            {tab === "models" && <Models onChange={refresh} />}
-          </>
-        )}
-      </main>
+      <Routes>
+        <Route element={<main className="content"><Outlet /></main>}>
+          <Route index element={<Navigate to="/playground" replace />} />
+          <Route path="*" element={<div><h1>Page not found</h1><p>The requested page could not be found.</p><Link to="/playground" onClick={() => { if (error) refresh(); }}>Go to Playground</Link></div>} />
+          {[
+            ["/playground", catalog && <Playground catalog={catalog} />],
+            ["/matrix", catalog && <Matrix catalog={catalog} />],
+            ["/compare", catalog && <Compare catalog={catalog} />],
+            ["/ensemble", catalog && <Ensemble catalog={catalog} />],
+            ["/judge-reliability", catalog && <JudgeReliability catalog={catalog} />],
+            ["/decision-judges", catalog && <DecisionLab catalog={catalog} openModels={() => navigate("/models")} />],
+            ["/datasets", catalog && <Datasets catalog={catalog} onChange={refresh} />],
+            ["/models", catalog && <Models onChange={refresh} />],
+          ].map(([path, view]) => (
+            <Route key={path as string} path={path as string} element={<>{error && <div className="banner">{error}</div>}{!catalog && !error && <p className="muted">Loading catalogue…</p>}{catalog && view}</>} />
+          ))}
+        </Route>
+      </Routes>
     </div>
   );
 }

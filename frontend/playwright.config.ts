@@ -1,4 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
+import { randomUUID } from "node:crypto";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { loadEnv } from "vite";
 
 // The E2E suite runs the real API wired to the offline demo client, so scores are
@@ -7,6 +10,8 @@ import { loadEnv } from "vite";
 const env = { ...loadEnv("development", process.cwd(), ""), ...process.env };
 const backendPort = env.BACKEND_PORT || "8000";
 const frontendUrl = `http://localhost:${env.FRONTEND_PORT || "5173"}`;
+const e2eModelsOverlay = path.join(tmpdir(), `workshop-evals-models-${randomUUID()}.yaml`);
+const e2eDatasetsOverlay = path.join(tmpdir(), `workshop-evals-datasets-${randomUUID()}.json`);
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -23,11 +28,11 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: [
     {
-      // A throwaway overlay keeps model add/remove in the suite from touching the
-      // real gitignored models.runtime.yaml the dev server uses. OPENAI_API_KEY is
-      // cleared so the credential test starts from a known "no key" state.
+      // Per-run overlays keep model add/remove in the suite from touching the
+      // real gitignored runtime catalogues. Provider keys are cleared
+      // so credential tests start from a known "no key" state.
       command:
-        `OPENAI_API_KEY= WORKSHOP_EVALS_FAKE_LLM=1 WORKSHOP_EVALS_MODELS_OVERLAY=.e2e-overlay.yaml WORKSHOP_EVALS_DATASETS_OVERLAY=.e2e-datasets.json ../backend/.venv/bin/uvicorn workshop_evals.adapters.inbound.http.app:app --host 127.0.0.1 --port ${backendPort}`,
+        `OPENAI_API_KEY= OPENROUTER_API_KEY= ANTHROPIC_API_KEY= WORKSHOP_EVALS_FAKE_LLM=1 WORKSHOP_EVALS_MODELS_OVERLAY=${e2eModelsOverlay} WORKSHOP_EVALS_DATASETS_OVERLAY=${e2eDatasetsOverlay} ../backend/.venv/bin/uvicorn workshop_evals.adapters.inbound.http.app:app --host 127.0.0.1 --port ${backendPort}`,
       url: `http://127.0.0.1:${backendPort}/health`,
       reuseExistingServer: false,
       timeout: 60_000,

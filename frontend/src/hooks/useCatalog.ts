@@ -17,7 +17,10 @@ export function useCatalog() {
   // enabling or removing a model.
   const refresh = useCallback(() => {
     Promise.all([api.listModels(), api.listEvaluators(), api.listDatasets()])
-      .then(([models, evaluators, datasets]) => setCatalog({ models, evaluators, datasets }))
+      .then(([models, evaluators, datasets]) => {
+        setCatalog({ models, evaluators, datasets });
+        setError(null);
+      })
       .catch((err: unknown) =>
         setError(
           err instanceof ApiError

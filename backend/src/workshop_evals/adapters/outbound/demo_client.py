@@ -10,6 +10,7 @@ import json
 
 from workshop_evals.adapters.outbound.fake_llm_client import FakeLLMClient
 from workshop_evals.application.ports.llm_client import Message
+from workshop_evals.application.services.decision_baseline import DECISION_BASELINE_SYSTEM
 from workshop_evals.domain.models import ModelSpec, RunParams
 from workshop_evals.domain.scoring.judge_rubric import JUDGE_SYSTEM, PAIRWISE_SYSTEM
 
@@ -30,6 +31,18 @@ _PAIRWISE_REPLY = json.dumps({"winner": "A", "justification": "Answer A reads mo
 
 def _handler(model: ModelSpec, messages: list[Message], params: RunParams) -> str:
     system = messages[0]["content"] if messages and messages[0].get("role") == "system" else ""
+    if system == DECISION_BASELINE_SYSTEM:
+        payload = json.loads(messages[-1]["content"].split("\n", 1)[1])
+        answers = {}
+        for question in payload["questions"]:
+            if question["type"] == "noul":
+                value = True
+            elif question["type"] == "choice":
+                value = next(iter(question["criteria"]))
+            else:
+                value = 0
+            answers[question["id"]] = {"value": value, "rationale": "Simulated baseline."}
+        return json.dumps(answers)
     if system == PAIRWISE_SYSTEM:
         # Always prefers the answer in position A -- a deliberately position-biased demo.
         return _PAIRWISE_REPLY

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _BACKEND_ROOT = Path(__file__).resolve().parents[3]
@@ -38,6 +39,12 @@ class Settings(BaseSettings):
 
 
 _settings: Settings | None = None
+
+
+def load_launch_environment(launch_dir: Path | None = None) -> None:
+    """Load only the `.env` in the backend launch directory, preserving exported values."""
+    directory = launch_dir if launch_dir is not None else Path.cwd()
+    load_dotenv(dotenv_path=directory / ".env", override=False)
 
 
 def get_settings() -> Settings:

@@ -1,0 +1,177 @@
+{
+  "run": {
+    "id": "fixture",
+    "status": "completed",
+    "config": {
+      "items": [
+        {
+          "id": "a",
+          "prompt": "Q",
+          "answer": "A",
+          "reference": null,
+          "evidence": null,
+          "labels": {
+            "ok": true
+          }
+        },
+        {
+          "id": "b",
+          "prompt": "Q",
+          "answer": "B",
+          "reference": null,
+          "evidence": null,
+          "labels": {
+            "ok": false
+          }
+        },
+        {
+          "id": "c",
+          "prompt": "Q",
+          "answer": "C",
+          "reference": null,
+          "evidence": null,
+          "labels": {}
+        },
+        {
+          "id": "d",
+          "prompt": "Q",
+          "answer": "D",
+          "reference": null,
+          "evidence": null,
+          "labels": {
+            "ok": true
+          }
+        }
+      ],
+      "questions": [
+        {
+          "id": "ok",
+          "type": "noul",
+          "instructions": "Acceptable?",
+          "criteria": {}
+        }
+      ],
+      "judge_ids": [
+        "jev-1-14"
+      ],
+      "baseline_model_id": null
+    },
+    "results": [
+      {
+        "item_id": "a",
+        "judge_id": "jev-1-14",
+        "requested_model": "typesafe/jev-1.14",
+        "returned_model": null,
+        "answers": {
+          "ok": {
+            "type": "noul",
+            "probability": 0.5,
+            "verdict": null,
+            "rationale": null
+          }
+        },
+        "raw_answers": {},
+        "question_errors": {},
+        "error": null,
+        "usage": {
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_usd": null,
+          "latency_ms": null,
+          "attempts": 1
+        },
+        "simulated": false
+      },
+      {
+        "item_id": "b",
+        "judge_id": "jev-1-14",
+        "requested_model": "typesafe/jev-1.14",
+        "returned_model": null,
+        "answers": {
+          "ok": {
+            "type": "noul",
+            "probability": 0.8,
+            "verdict": null,
+            "rationale": null
+          }
+        },
+        "raw_answers": {},
+        "question_errors": {},
+        "error": null,
+        "usage": {
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_usd": null,
+          "latency_ms": null,
+          "attempts": 1
+        },
+        "simulated": false
+      },
+      {
+        "item_id": "c",
+        "judge_id": "jev-1-14",
+        "requested_model": "typesafe/jev-1.14",
+        "returned_model": null,
+        "answers": {
+          "ok": {
+            "type": "noul",
+            "probability": 0.1,
+            "verdict": null,
+            "rationale": null
+          }
+        },
+        "raw_answers": {},
+        "question_errors": {},
+        "error": null,
+        "usage": {
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_usd": null,
+          "latency_ms": null,
+          "attempts": 1
+        },
+        "simulated": false
+      },
+      {
+        "item_id": "d",
+        "judge_id": "jev-1-14",
+        "requested_model": "typesafe/jev-1.14",
+        "returned_model": null,
+        "answers": {},
+        "raw_answers": {},
+        "question_errors": {},
+        "error": {
+          "code": "error",
+          "message": "Failure"
+        },
+        "usage": {
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_usd": null,
+          "latency_ms": null,
+          "attempts": 1
+        },
+        "simulated": false
+      }
+    ],
+    "total": 4,
+    "completed": 4,
+    "error": null
+  },
+  "expected": {
+    "total": 4,
+    "labeled": 3,
+    "unlabeled": 1,
+    "successful": 3,
+    "errors": 1,
+    "pending": 0,
+    "comparable": 2,
+    "tp": 1,
+    "fp": 1,
+    "tn": 0,
+    "fn": 0,
+    "accuracy": 0.5,
+    "false_positive_rate": 1.0,
+    "false_negative_rate": 0.0
+  }
+}

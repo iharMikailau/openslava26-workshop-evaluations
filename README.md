@@ -75,8 +75,9 @@ see where each one succeeds and where it misleads you.
 ## Quick start
 
 **Prerequisites:** Python 3.11+, Node 18+, and — for the free local path —
-[Ollama](https://ollama.com) with a model pulled (`ollama pull qwen3:4b`). Hosted models
-need `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY`.
+[Ollama](https://ollama.com) with a model pulled (`ollama pull qwen3:4b`). The recommended
+hosted path uses one `OPENROUTER_API_KEY`; direct OpenAI and Anthropic models can be added
+manually in the Models tab.
 
 **Backend**
 
@@ -86,6 +87,11 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 uvicorn workshop_evals.adapters.inbound.http.app:app
 ```
+
+For hosted models, create `backend/.env` from `backend/.env.example` before launching the
+backend from `backend/`, then set `OPENROUTER_API_KEY`. An exported environment value takes
+precedence. You can also set the key in Models → Session credentials for the current process.
+Hosted requests use paid OpenRouter credits; catalogue reads and local models need no key.
 
 No model or API key handy? Run it in offline demo mode, which answers with a canned client
 so the whole app still works:
@@ -103,6 +109,17 @@ npm run dev
 ```
 
 Open <http://localhost:5173>. The API docs are at <http://localhost:8000/docs>.
+
+The application pages have stable addresses: `/playground`, `/matrix`, `/compare`,
+`/ensemble`, `/judge-reliability`, `/decision-judges`, `/datasets`, and `/models`.
+The root redirects to Playground. Links and browser history navigate between screens;
+leaving a screen resets its local inputs and results, and refresh restores only the screen.
+
+Vite serves the app for direct page requests. Production hosts must serve `index.html`
+for client navigation paths, including unknown paths, while routing `/api` and `/health`
+to the backend and serving static assets normally. Missing assets must return their real
+missing-file response rather than the app document.
+
 
 **Different ports.** If 8000 or 5173 is already taken, pick others: start the backend with
 `--port <n>` and set the same values for the frontend, either in the shell or in
@@ -127,3 +144,7 @@ cd frontend && npx playwright test
 ## The workshop
 
 Start at [`docs/README.md`](docs/README.md) and work through the labs in order.
+
+### Frontend styling
+
+The frontend uses semantic CSS tokens in `frontend/src/styles.css` for surfaces, text, controls and focus. Green, amber and rose represent successful, partial and failed outcomes, with labels or values also conveying meaning. Keep normal text at 4.5:1 contrast and control boundaries and focus indicators at 3:1 against adjacent surfaces. The sans-serif and monospace stacks fall back to system fonts; no font download or styling service is required.

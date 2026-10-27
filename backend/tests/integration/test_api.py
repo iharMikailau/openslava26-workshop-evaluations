@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 import respx
 from fastapi.testclient import TestClient
@@ -18,12 +20,28 @@ def test_health(client):
     assert r.json() == {"status": "ok"}
 
 
-def test_list_models(client):
+@respx.mock
+def test_list_models(client, monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    route = respx.post("https://openrouter.ai/api/v1/chat/completions").mock(
+        return_value=Response(200, json={})
+    )
     r = client.get("/api/catalog/models")
     assert r.status_code == 200
     ids = {m["id"] for m in r.json()}
     assert "qwen3-4b" in ids
-    assert len(ids) == 7
+    assert {
+        "openrouter-gpt-6-1-sol",
+        "openrouter-gpt-6-1-terra",
+        "openrouter-gpt-6-luna",
+        "openrouter-claude-sonnet-5-5",
+        "openrouter-claude-haiku-5-5",
+        "openrouter-claude-opus-5-5",
+        "openrouter-deepseek-v4-1-flash-1017",
+        "openrouter-qwen3-8-max-0902",
+    } <= ids
+    assert len(ids) == 11
+    assert route.call_count == 0
 
 
 def test_list_evaluators(client):
@@ -82,14 +100,81 @@ def test_evaluate_llm_judge_inline(client):
         "methods": ["llm_judge"],
         "prompt": "Explain recursion to a beginner.",
         "rubric": ["clear", "correct"],
-        "judge_model_id": "gpt-4o",
+        "judge_model_id": "llama3-2-3b",
     }
     r = client.post("/api/evaluate", json=body)
     score = r.json()["scores"][0]
     assert score["method"] == "llm_judge"
     assert score["dimensions"] is not None
     assert 0.0 <= score["value"] <= 1.0
-    assert score["judge_model"] == "gpt-4o"
+    assert score["judge_model"] == "llama3-2-3b"
+
+
+@respx.mock
+def test_openrouter_candidate_and_cross_vendor_judge_share_one_key(tmp_path, monkeypatch):
+    import os
+
+    from httpx import Response
+
+    from workshop_evals.adapters.outbound.openai_compat_client import OpenAICompatClient
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "shared-test-key")
+    settings = get_settings().model_copy(update={"models_overlay": tmp_path / "overlay.yaml"})
+    container = build_container(settings=settings, llm_client=OpenAICompatClient(max_retries=0))
+    app_client = TestClient(create_app(container))
+    route = respx.post("https://openrouter.ai/api/v1/chat/completions").mock(
+        side_effect=[
+            Response(
+                200,
+                json={
+                    "choices": [{"message": {"content": "candidate response"}}],
+                    "usage": {"prompt_tokens": 3, "completion_tokens": 2},
+                },
+            ),
+            Response(
+                200,
+                json={
+                    "choices": [
+                        {
+                            "message": {
+                                "content": (
+                                    '{"correctness":8,"completeness":8,"robustness":7,'
+                                    '"clarity":9,"efficiency":7,"justification":"clear"}'
+                                )
+                            }
+                        }
+                    ],
+                    "usage": {"prompt_tokens": 5, "completion_tokens": 8},
+                },
+            ),
+        ]
+    )
+
+    response = app_client.post(
+        "/api/evaluate",
+        json={
+            "model_id": "openrouter-gpt-6-luna",
+            "methods": ["llm_judge"],
+            "prompt": "Answer simply.",
+            "rubric": ["correct", "clear"],
+            "judge_model_id": "openrouter-claude-sonnet-5-5",
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["response"] == "candidate response"
+    assert result["error"] is None
+    assert result["scores"][0]["judge_model"] == "openrouter-claude-sonnet-5-5"
+    assert [call.request.headers["Authorization"] for call in route.calls] == [
+        "Bearer shared-test-key",
+        "Bearer shared-test-key",
+    ]
+    assert [json.loads(call.request.content)["model"] for call in route.calls] == [
+        "openai/gpt-6-luna",
+        "anthropic/claude-sonnet-5.5",
+    ]
+    assert os.environ["OPENROUTER_API_KEY"] == "shared-test-key"
 
 
 def test_evaluate_same_prompt_two_mechanisms(client):
@@ -99,7 +184,7 @@ def test_evaluate_same_prompt_two_mechanisms(client):
         "prompt": "Classify the sentiment: I love this product.",
         "reference": "positive",
         "rubric": ["accurate label"],
-        "judge_model_id": "gpt-4o",
+        "judge_model_id": "llama3-2-3b",
     }
     r = client.post("/api/evaluate", json=body)
     methods = {s["method"] for s in r.json()["scores"]}
@@ -108,11 +193,11 @@ def test_evaluate_same_prompt_two_mechanisms(client):
 
 def test_evaluate_self_evaluation_is_flagged(client):
     body = {
-        "model_id": "gpt-4o",
+        "model_id": "llama3-2-3b",
         "methods": ["llm_judge"],
         "prompt": "Anything",
         "rubric": ["x"],
-        "judge_model_id": "gpt-4o",
+        "judge_model_id": "llama3-2-3b",
     }
     r = client.post("/api/evaluate", json=body)
     assert "self-evaluation" in r.json()["scores"][0]["detail"]
@@ -220,7 +305,7 @@ def test_judge_agreement_flow(client):
             "case_ids": ["sent-01", "sent-02"],
             "candidates": [{"model_id": "qwen3-4b"}],
             "methods": ["llm_judge"],
-            "judge_model_id": "gpt-4o",
+            "judge_model_id": "llama3-2-3b",
         },
     )
     assert posted.status_code == 202
@@ -231,7 +316,7 @@ def test_judge_agreement_flow(client):
         "/api/judge-agreement",
         json={
             "run_id": run_id,
-            "reference_judge_model_id": "claude-sonnet-4-5",
+            "reference_judge_model_id": "llama3-2-3b",
             "sample_size": 10,
         },
     )
@@ -251,7 +336,7 @@ def test_judge_agreement_flow(client):
 def test_judge_agreement_unknown_run(client):
     r = client.post(
         "/api/judge-agreement",
-        json={"run_id": "nope", "reference_judge_model_id": "gpt-4o"},
+        json={"run_id": "nope", "reference_judge_model_id": "llama3-2-3b"},
     )
     assert r.status_code == 404
 
@@ -267,7 +352,7 @@ def test_judge_agreement_requires_judge_scores(client):
     ).json()["id"]
     r = client.post(
         "/api/judge-agreement",
-        json={"run_id": run_id, "reference_judge_model_id": "gpt-4o"},
+        json={"run_id": run_id, "reference_judge_model_id": "llama3-2-3b"},
     )
     assert r.status_code == 422
 
@@ -277,7 +362,7 @@ def test_compare_pairwise_detects_position_bias(client):
         "case_id": "sent-01",
         "model_a": "qwen3-4b",
         "model_b": "llama3-2-3b",
-        "judge_model_id": "gpt-4o",
+        "judge_model_id": "llama3-2-3b",
         "swap": True,
     }
     r = client.post("/api/compare", json=body)
@@ -295,7 +380,7 @@ def test_compare_without_swap_has_no_bias_flag(client):
         "prompt": "Say hello.",
         "model_a": "qwen3-4b",
         "model_b": "llama3-2-3b",
-        "judge_model_id": "gpt-4o",
+        "judge_model_id": "llama3-2-3b",
         "swap": False,
     }
     r = client.post("/api/compare", json=body)
@@ -304,14 +389,19 @@ def test_compare_without_swap_has_no_bias_flag(client):
 
 
 def test_compare_unknown_model_reports_error(client):
-    body = {"prompt": "x", "model_a": "ghost", "model_b": "llama3-2-3b", "judge_model_id": "gpt-4o"}
+    body = {
+        "prompt": "x",
+        "model_a": "ghost",
+        "model_b": "llama3-2-3b",
+        "judge_model_id": "llama3-2-3b",
+    }
     r = client.post("/api/compare", json=body)
     assert r.status_code == 200
     assert r.json()["error"] is not None
 
 
 def test_compare_requires_case_or_prompt(client):
-    body = {"model_a": "qwen3-4b", "model_b": "llama3-2-3b", "judge_model_id": "gpt-4o"}
+    body = {"model_a": "qwen3-4b", "model_b": "llama3-2-3b", "judge_model_id": "llama3-2-3b"}
     assert client.post("/api/compare", json=body).status_code == 422
 
 
@@ -319,7 +409,7 @@ def test_ensemble_judge_averages_multiple_judges(client):
     body = {
         "case_id": "sent-01",
         "model_id": "qwen3-4b",
-        "judge_model_ids": ["gpt-4o", "claude-sonnet-4-5"],
+        "judge_model_ids": ["llama3-2-3b", "qwen3-4b"],
     }
     r = client.post("/api/ensemble-judge", json=body)
     assert r.status_code == 200
@@ -342,7 +432,7 @@ def test_ensemble_requires_at_least_one_judge(client):
 
 
 def test_ensemble_unknown_model_reports_error(client):
-    body = {"prompt": "x", "model_id": "ghost", "judge_model_ids": ["gpt-4o"]}
+    body = {"prompt": "x", "model_id": "ghost", "judge_model_ids": ["llama3-2-3b"]}
     r = client.post("/api/ensemble-judge", json=body)
     assert r.status_code == 200
     assert r.json()["error"] is not None
@@ -379,6 +469,41 @@ def test_manage_endpoint_returns_source_and_key_detected(mgmt_client):
     first = models[0]
     assert "source" in first
     assert "key_detected" in first
+
+
+def test_manage_shows_openrouter_enabled_without_direct_examples(mgmt_client, monkeypatch):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    models = {model["id"]: model for model in mgmt_client.get("/api/catalog/manage").json()}
+    enabled = {model["id"] for model in mgmt_client.get("/api/catalog/models").json()}
+    openrouter_ids = {model_id for model_id in models if model_id.startswith("openrouter-")}
+    direct_ids = {"gpt-4o-mini", "gpt-4o", "claude-haiku-4-5", "claude-sonnet-4-5"}
+
+    assert len(openrouter_ids) == 8
+    assert openrouter_ids <= enabled
+    assert direct_ids.isdisjoint(models)
+    assert direct_ids.isdisjoint(enabled)
+    assert all(models[model_id]["key_detected"] is False for model_id in openrouter_ids)
+
+
+def test_direct_provider_model_can_be_added_manually(mgmt_client):
+    direct_model = {
+        "id": "manual-openai-model",
+        "display_name": "Manual OpenAI Model",
+        "provider": "openai_compat",
+        "model_id": "gpt-4o-mini",
+        "base_url": "https://api.openai.com/v1",
+        "api_key_env": "OPENAI_API_KEY",
+        "role": "both",
+        "supports_reasoning": False,
+        "enabled": True,
+    }
+    response = mgmt_client.post("/api/catalog/models", json=direct_model)
+
+    assert response.status_code == 200
+    assert response.json()["source"] == "user"
+    assert "manual-openai-model" in {
+        model["id"] for model in mgmt_client.get("/api/catalog/models").json()
+    }
 
 
 def test_upsert_model_then_appears_in_enabled_list(mgmt_client):

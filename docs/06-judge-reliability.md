@@ -46,7 +46,7 @@ from a self-evaluating setup should not be treated as unbiased ground truth.
 
 Another well-documented failure mode is position bias: when a judge compares two answers,
 it can favour whichever one appears first (or second), independent of quality. The
-**Compare** tab makes this measurable. It asks the judge which of two answers is better,
+**Compare** page makes this measurable. It asks the judge which of two answers is better,
 then — with "Swap positions" enabled — asks again with the two answers in swapped
 positions. If the winner is the same answer both times, the judge is judging quality. If
 the winner flips to whatever now sits in the favoured position, the verdict was driven by
@@ -55,7 +55,7 @@ cannot be trusted for pairwise ranking without averaging over both orderings.
 
 ### Ensemble judging — the Ensemble view
 
-A single judge is one noisy opinion. The **Ensemble** tab scores one answer with several
+A single judge is one noisy opinion. The **Ensemble** page scores one answer with several
 judges at once and reports their average plus the spread (standard deviation) of their
 scores. Averaging independent judges reduces the influence of any single model's quirks,
 much as averaging several human raters does. The spread is itself a signal: when the
@@ -96,7 +96,7 @@ different implicit standards for edge-case handling.
 ### What the reference judge means
 
 The reference judge is assumed to be a stronger, more calibrated model. In practice, this
-is usually the largest frontier model available to you — for example, GPT-4o or Claude
+is usually the largest frontier model available to you — for example, GPT-6.1 Sol or Claude
 Sonnet as a reference against a local Qwen3 judge.
 
 "Stronger" means two things: (1) more likely to be consistently calibrated, and (2) more
@@ -112,7 +112,7 @@ anchor to human judgment. The meta-evaluation here automates the step below that
 
 ## Steps
 
-1. Click the **Judge reliability** tab.
+1. Click the **Judge reliability** page.
 
 2. In the **Setup** card:
    - **Dataset category**: select `writing`, `instruction_following`, or `code_review`.

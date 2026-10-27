@@ -67,7 +67,7 @@ test("playground: adjusts model parameters including reasoning", async ({ page }
 
 test("matrix: adds and removes a candidate", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Matrix" }).click();
+  await page.getByRole("link", { name: "Matrix" }).click();
   await expect(page.getByTitle("Remove")).toHaveCount(0); // one candidate, no remove control
 
   await page.getByRole("button", { name: "Add candidate" }).click();
@@ -79,7 +79,7 @@ test("matrix: adds and removes a candidate", async ({ page }) => {
 
 test("matrix: toggling cases and mechanisms updates the selection", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Matrix" }).click();
+  await page.getByRole("link", { name: "Matrix" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
 
   const firstCase = page.locator(".card", { hasText: "Cases" }).locator(".check input").first();
@@ -94,7 +94,7 @@ test("matrix: toggling cases and mechanisms updates the selection", async ({ pag
 
 test("matrix: runs cases against candidates and fills the grid", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Matrix" }).click();
+  await page.getByRole("link", { name: "Matrix" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
   await page.getByRole("button", { name: "Run matrix" }).click();
 
@@ -109,7 +109,7 @@ test("matrix: runs cases against candidates and fills the grid", async ({ page }
 
 test("matrix: the gate blocks below the threshold and passes when it is lowered", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Matrix" }).click();
+  await page.getByRole("link", { name: "Matrix" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
   await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: "Run matrix" }).click();
@@ -127,7 +127,7 @@ test("matrix: the gate blocks below the threshold and passes when it is lowered"
 
 test("matrix: two prompt variants become two columns", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Matrix" }).click();
+  await page.getByRole("link", { name: "Matrix" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
 
   await page.getByRole("button", { name: "Add candidate" }).click();
@@ -142,7 +142,7 @@ test("matrix: two prompt variants become two columns", async ({ page }) => {
 
 test("judge reliability: reports agreement and a verdict", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Judge reliability" }).click();
+  await page.getByRole("link", { name: "Judge reliability" }).click();
   await page.getByLabel("Dataset category").selectOption("sentiment_classification");
   await page.getByRole("button", { name: "Measure agreement" }).click();
 
@@ -153,7 +153,7 @@ test("judge reliability: reports agreement and a verdict", async ({ page }) => {
 
 test("compare: judges A vs B and reveals position bias", async ({ page }) => {
   await page.goto("/");
-  await page.locator(".tabs").getByRole("button", { name: "Compare" }).click();
+  await page.locator(".tabs").getByRole("link", { name: "Compare" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
   await expect(page.getByLabel("Case")).toContainText("sent-01");
   await page.waitForLoadState("networkidle");
@@ -165,7 +165,7 @@ test("compare: judges A vs B and reveals position bias", async ({ page }) => {
 
 test("ensemble: several judges score one answer", async ({ page }) => {
   await page.goto("/");
-  await page.locator(".tabs").getByRole("button", { name: "Ensemble" }).click();
+  await page.locator(".tabs").getByRole("link", { name: "Ensemble" }).click();
   await page.getByLabel("Category").selectOption("sentiment_classification");
   await expect(page.getByLabel("Case")).toContainText("sent-01");
   await page.waitForLoadState("networkidle");

@@ -73,7 +73,7 @@ surface forms are similar but the sequence structure differs.
 
 ## Steps
 
-1. Click the **Playground** tab.
+1. Click the **Playground** page.
 
 2. Select the `summarization` category from the **Category** dropdown.
 

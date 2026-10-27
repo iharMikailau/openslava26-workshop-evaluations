@@ -1,5 +1,9 @@
 import type {
   CellResult,
+  DecisionModel,
+  DecisionConfig,
+  DecisionRun,
+  Completion,
   CompareRequest,
   DatasetSummary,
   DiscoverResponse,
@@ -52,6 +56,10 @@ const post = <T>(path: string, body: unknown) =>
 const del = <T>(path: string) => request<T>(path, { method: "DELETE" });
 
 export const api = {
+  decisionJudges: () => get<DecisionModel[]>("/api/decision-judges"),
+  generateDecisionAnswer: (body: { model_id: string; prompt?: string; case_id?: string }) => post<Completion>("/api/decision-lab/generate", body),
+  createDecisionRun: (config: DecisionConfig) => post<DecisionRun>("/api/decision-lab/runs", config),
+  getDecisionRun: (id: string) => get<DecisionRun>(`/api/decision-lab/runs/${encodeURIComponent(id)}`),
   listModels: () => get<ModelSpec[]>("/api/catalog/models"),
   listEvaluators: () => get<EvaluatorInfo[]>("/api/catalog/evaluators"),
   listDatasets: () => get<DatasetSummary[]>("/api/catalog/datasets"),
